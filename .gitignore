@@ -1,3 +1,10 @@
+node_modules/
+build/
+.idea
+pids
+logs
+.idea/
+contracts/flattened/*.sol
 # Binaries for programs and plugins
 *.exe
 *.exe~
