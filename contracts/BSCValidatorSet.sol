@@ -32,7 +32,7 @@ contract BSCValidatorSet is IBSCValidatorSet, System, IParamSubscriber, IApplica
     uint256 public constant EXPIRE_TIME_SECOND_GAP = 1000;
     uint256 public constant MAX_NUM_OF_VALIDATORS = 41;
 
-    bytes public constant INIT_VALIDATORSET_BYTES = hex"f84580f842f840949fb29aac15b9a4b7f17c3385939b007540f4d791949fb29aac15b9a4b7f17c3385939b007540f4d791949fb29aac15b9a4b7f17c3385939b007540f4d79164";
+    bytes public constant INIT_VALIDATORSET_BYTES = hex"f8c980f8c6f840943778e4c289f77dc0fda9a6062a5ae9dc7ce69c8a943778e4c289f77dc0fda9a6062a5ae9dc7ce69c8a943778e4c289f77dc0fda9a6062a5ae9dc7ce69c8a32f8409409e3fd90b1eafa9f5869bf15dfd99edf504075d49409e3fd90b1eafa9f5869bf15dfd99edf504075d49409e3fd90b1eafa9f5869bf15dfd99edf504075d437f8409452093c7d03be906c37e0ecb42fd0d9ea1cfb1c0a9452093c7d03be906c37e0ecb42fd0d9ea1cfb1c0a9452093c7d03be906c37e0ecb42fd0d9ea1cfb1c0a3c";
 
     uint32 public constant ERROR_UNKNOWN_PACKAGE_TYPE = 101;
     uint32 public constant ERROR_FAIL_CHECK_VALIDATORS = 102;
@@ -97,6 +97,8 @@ contract BSCValidatorSet is IBSCValidatorSet, System, IParamSubscriber, IApplica
     event unexpectedPackage(uint8 channelId, bytes msgBytes);
     event paramChange(string key, bytes value);
     event feeBurned(uint256 amount);
+    event duskBalance(uint256 amount);
+
 
     /*********************** init **************************/
     function init() external onlyNotInit {
@@ -310,6 +312,50 @@ contract BSCValidatorSet is IBSCValidatorSet, System, IParamSubscriber, IApplica
         // step 6: clean slash contract
         ISlashIndicator(SLASH_CONTRACT_ADDR).clean();
         emit validatorSetUpdated();
+        return CODE_OK;
+    }
+
+    function distributeReward() external onlyInit returns (uint32) {
+        //step 1: do calculate distribution, do not make it as an internal function for saving gas.
+        uint directSize = 0;
+        for (uint i = 0; i < currentValidatorSet.length; i++) {
+            if (currentValidatorSet[i].incoming > 0) {
+                directSize ++;
+            }
+        }
+        // calculate direct transfer
+        address payable[] memory directAddrs = new address payable[](directSize);
+        uint256[] memory directAmounts = new uint256[](directSize);
+        directSize = 0;
+        for (uint i = 0; i < currentValidatorSet.length; i++) {
+            if (currentValidatorSet[i].incoming > 0) {
+                directAddrs[directSize] = currentValidatorSet[i].feeAddress;
+                directAmounts[directSize] = currentValidatorSet[i].incoming;
+                directSize ++;
+            }
+        }
+
+        // step 2: direct transfer
+        if (directAddrs.length > 0) {
+            for (uint i = 0; i < directAddrs.length; i++) {
+                bool success = directAddrs[i].send(directAmounts[i]);
+                if (success) {
+                    uint index = currentValidatorSetMap[directAddrs[i]];
+                    if (index > 0) {
+                        // subtract incoming
+                        currentValidatorSet[index-1].incoming = currentValidatorSet[index-1].incoming.sub(directAmounts[i]);
+                        totalInComing = totalInComing.sub(directAmounts[i]);
+                    }
+                    emit directTransfer(directAddrs[i], directAmounts[i]);
+                } else {
+                    emit directTransferFail(directAddrs[i], directAmounts[i]);
+                }
+            }
+        }
+
+        //log dusk balance ,do not transfer dusk balance ,keep it
+        emit duskBalance(address(this).balance);
+
         return CODE_OK;
     }
 
