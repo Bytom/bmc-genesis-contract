@@ -145,25 +145,6 @@
   {
     "inputs": [
       {
-        "internalType": "address[]",
-        "name": "validatorSet",
-        "type": "address[]"
-      }
-    ],
-    "name": "updateValidatorSet",
-    "outputs": [
-      {
-        "internalType": "uint32",
-        "name": "",
-        "type": "uint32"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
@@ -178,6 +159,25 @@
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address[]",
+        "name": "validatorSet",
+        "type": "address[]"
+      }
+    ],
+    "name": "updateValidatorSet",
+    "outputs": [
+      {
+        "internalType": "uint32",
+        "name": "",
+        "type": "uint32"
+      }
+    ],
+    "stateMutability": "nonpayable",
     "type": "function"
   }
 ]
