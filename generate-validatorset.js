@@ -7,13 +7,13 @@ program.version("0.0.1");
 program.option(
     "-t, --template <template>",
     "validatorSet template file",
-    "./contracts/BSCValidatorSet.template"
+    "./contracts/BMCValidatorSet.template"
 );
 
 program.option(
     "-o, --output <output-file>",
-    "BSCValidatorSet.sol",
-    "./contracts/BSCValidatorSet.sol"
+    "BMCValidatorSet.sol",
+    "./contracts/BMCValidatorSet.sol"
 )
 
 program.option(
@@ -21,12 +21,12 @@ program.option(
     "initValidatorSetBytes",
     ""
 )
-
 program.option(
-    "--initBurnRatio <initBurnRatio>",
-    "initBurnRatio",
-    "0"
+    "--initOwnerBytes <initOwnerBytes>",
+    "initOwnerBytes",
+    ""
 )
+
 
 program.option("--mock <mock>",
     "if use mock",
@@ -34,18 +34,23 @@ program.option("--mock <mock>",
 
 program.parse(process.argv);
 
-const validators = require("./validators")
+const roles = require("./roles")
 let initValidatorSetBytes = program.initValidatorSetBytes;
-if (initValidatorSetBytes == ""){
-  initValidatorSetBytes = validators.validatorSetBytes.slice(2);
+if (initValidatorSetBytes == "") {
+    initValidatorSetBytes = roles.validatorSetBytes.slice(2);
+}
+let initOwnerBytes = program.initOwnerBytes;
+
+if (initOwnerBytes == "") {
+    initOwnerBytes = roles.ownerBytes.slice(2);
 }
 const data = {
-  initValidatorSetBytes: initValidatorSetBytes,
-  initBurnRatio: program.initBurnRatio,
-  mock: program.mock,
+    initValidatorSetBytes: initValidatorSetBytes,
+    initOwnerBytes: initOwnerBytes,
+    mock: program.mock,
 };
 
 const templateString = fs.readFileSync(program.template).toString();
 const resultString = nunjucks.renderString(templateString, data);
 fs.writeFileSync(program.output, resultString);
-console.log("BSCValidatorSet file updated.");
+console.log("BMCValidatorSet file updated.");

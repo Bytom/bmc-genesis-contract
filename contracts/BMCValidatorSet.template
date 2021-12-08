@@ -1,0 +1,78 @@
+pragma solidity 0.6.4;
+
+import "./lib/RLPDecode.sol";
+
+contract BMCValidatorSet {
+    using RLPDecode for *;
+
+    uint256 public constant MAX_NUM_OF_VALIDATORS = 41;
+    bytes public constant   INIT_VALIDATOR_SET_BYTES = hex"{{initValidatorSetBytes}}";
+    bytes public constant INIT_OWNER_BYTES = hex"{{initOwnerBytes}}";
+    uint32 public constant CODE_OK = 0;
+    uint32 public constant ERROR_FAIL_DECODE = 100;
+
+
+    /*********************** state of the contgetValidatorsract **************************/
+    bool public alreadyInit;
+
+    address[] public roles;
+    address public owner;
+
+    modifier onlyOwner(){
+        require(msg.sender == owner, "msg sender is not the owner");
+        _;
+    }
+    modifier onlyNotInit() {
+        require(!alreadyInit, "the contract already init");
+        _;
+    }
+
+    modifier onlyInit() {
+        require(alreadyInit, "the contract not init yet");
+        _;
+    }
+    /*********************** events **************************/
+    event validatorSetUpdated(address[] validatorSet);
+    /*********************** init **************************/
+    function init() external onlyNotInit {
+        owner = INIT_OWNER_BYTES.toRLPItem().toAddress();
+        require(owner != address(0x0), "failed to init owner");
+        address [] memory addrs = decodeValidators();
+        for (uint i = 0; i < addrs.length; i++) {
+            roles.push(addrs[i]);
+        }
+        alreadyInit = true;
+    }
+
+    function updateValidatorSet(address[] calldata validatorSet) external onlyInit onlyOwner returns (uint32) {
+        require(validatorSet.length <= MAX_NUM_OF_VALIDATORS, "the number of roles exceed the limit");
+        uint n = roles.length;
+        for (uint i = 0; i < n; i++) {
+            roles.pop();
+        }
+        for (uint i = 0; i < validatorSet.length; i++) {
+            roles.push(validatorSet[i]);
+        }
+        emit validatorSetUpdated(validatorSet);
+        return CODE_OK;
+    }
+
+    function changeOwner(address newOwner) external onlyInit onlyOwner returns (uint32){
+        require(newOwner != address(0x0), "failed to change owner");
+        owner = newOwner;
+        return CODE_OK;
+    }
+
+    function getValidators() external view returns (address[] memory) {
+        return roles;
+    }
+
+    function decodeValidators() internal pure returns (address[] memory) {
+        RLPDecode.RLPItem[] memory items = INIT_VALIDATOR_SET_BYTES.toRLPItem().toList();
+        address [] memory valAddrs = new address[](items.length);
+        for (uint j = 0; j < items.length; j++) {
+            valAddrs[j] = items[j].toAddress();
+        }
+        return valAddrs;
+    }
+}
