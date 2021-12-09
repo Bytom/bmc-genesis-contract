@@ -15,7 +15,7 @@ contract BMCValidatorSet {
     /*********************** state of the contgetValidatorsract **************************/
     bool public alreadyInit;
 
-    address[] public roles;
+    address[] public validators;
     address public owner;
 
     modifier onlyOwner(){
@@ -39,19 +39,19 @@ contract BMCValidatorSet {
         require(owner != address(0x0), "failed to init owner");
         address [] memory addrs = decodeValidators();
         for (uint i = 0; i < addrs.length; i++) {
-            roles.push(addrs[i]);
+            validators.push(addrs[i]);
         }
         alreadyInit = true;
     }
 
     function updateValidatorSet(address[] calldata validatorSet) external onlyInit onlyOwner returns (uint32) {
-        require(validatorSet.length <= MAX_NUM_OF_VALIDATORS, "the number of roles exceed the limit");
-        uint n = roles.length;
+        require(validatorSet.length <= MAX_NUM_OF_VALIDATORS, "the number of validators exceed the limit");
+        uint n = validators.length;
         for (uint i = 0; i < n; i++) {
-            roles.pop();
+            validators.pop();
         }
         for (uint i = 0; i < validatorSet.length; i++) {
-            roles.push(validatorSet[i]);
+            validators.push(validatorSet[i]);
         }
         emit validatorSetUpdated(validatorSet);
         return CODE_OK;
@@ -64,7 +64,7 @@ contract BMCValidatorSet {
     }
 
     function getValidators() external view returns (address[] memory) {
-        return roles;
+        return validators;
     }
 
     function decodeValidators() internal pure returns (address[] memory) {
