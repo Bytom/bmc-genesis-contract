@@ -7,13 +7,8 @@ const web3 = require("web3")
 const roles = require("./roles")
 const initHolders = require("./init-holders")
 
-program.option("-c, --chainid <chainid>", "chain id", "999")
+program.option("-c, --chainid <chainid>", "chain id", "188")
 
-program.option(
-    "--initValidatorSetBytes <initValidatorSetBytes>",
-    "initValidatorSetBytes",
-    ""
-)
 
 require("./generate-validatorset");
 

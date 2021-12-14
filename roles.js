@@ -3,7 +3,7 @@ const RLP = require('rlp');
 
 // Configure
 const validators = ["0x3778e4c289f77dc0fda9a6062a5ae9dc7ce69c8a", "0x09e3fd90b1eafa9f5869bf15dfd99edf504075d4", "0x52093c7d03be906c37e0ecb42fd0d9ea1cfb1c0a"];
-const owner = "0x3778e4c289f77dc0fda9a6062a5ae9dc7ce69c8a";
+const owner = "0xcafc839117ad940308817215d1044604e8fba889";
 
 // ===============  Do not edit below ====
 function generateExtradata(validators) {
