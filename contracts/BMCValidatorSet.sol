@@ -7,7 +7,7 @@ contract BMCValidatorSet {
 
     uint256 public constant MAX_NUM_OF_VALIDATORS = 41;
     bytes public constant   INIT_VALIDATOR_SET_BYTES = hex"f83f943778e4c289f77dc0fda9a6062a5ae9dc7ce69c8a9409e3fd90b1eafa9f5869bf15dfd99edf504075d49452093c7d03be906c37e0ecb42fd0d9ea1cfb1c0a";
-    bytes public constant INIT_OWNER_BYTES = hex"943778e4c289f77dc0fda9a6062a5ae9dc7ce69c8a";
+    bytes public constant INIT_OWNER_BYTES = hex"94cafc839117ad940308817215d1044604e8fba889";
     uint32 public constant CODE_OK = 0;
     uint32 public constant ERROR_FAIL_DECODE = 100;
 

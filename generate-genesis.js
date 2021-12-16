@@ -7,7 +7,7 @@ const web3 = require("web3")
 const roles = require("./roles")
 const initHolders = require("./init-holders")
 
-program.option("-c, --chainid <chainid>", "chain id", "188")
+program.option("-c, --chainid <chainid>", "chain id", "189")
 
 
 require("./generate-validatorset");
