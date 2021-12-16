@@ -16,8 +16,8 @@
     "lint:sol": "solium -d contracts/",
     "flatten": "truffle-flattener contracts/BMCValidatorSet.sol > contracts/flattened/BMCValidatorSet.sol ",
     "generate-test": "node generate-system.js --mock true && node generate-systemReward.js --mock true && node generate-validatorset.js --mock true && node generate-system.js --mock true && node generate-crosschain.js --mock true && node generate-tokenhub.js --mock true && node generate-tendermintlightclient.js --mock true && node generate-relayerincentivizecontract.js --roundSize 30 --maximumWeight 3 --mock true && node generate-slash.js --mock true",
-    "generate-mainnet": "node generate-genesis.js --chainid 188    --initValidatorSetBytes ",
-    "generate-testnet": "node generate-genesis.js --chainid 288   --initValidatorSetBytes "
+    "generate-mainnet": "node generate-genesis.js --chainid 188   --initValidatorSetBytes ",
+    "generate-testnet": "node generate-genesis.js --chainid 189   --initValidatorSetBytes "
   },
   "author": "",
   "license": "MIT",
