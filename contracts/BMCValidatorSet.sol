@@ -17,6 +17,8 @@ contract BMCValidatorSet {
 
     address[] public validators;
     address public owner;
+    // temp state ,it's necessary to be confirmed by owner and nextOwner
+    address public nextOwner;
 
     modifier onlyOwner(){
         require(msg.sender == owner, "msg sender is not the owner");
@@ -57,9 +59,19 @@ contract BMCValidatorSet {
         return CODE_OK;
     }
 
-    function changeOwner(address newOwner) external onlyInit onlyOwner returns (uint32){
+    function transferAuthority(address newOwner) external onlyInit onlyOwner returns (uint32){
         require(newOwner != address(0x0), "failed to change owner");
-        owner = newOwner;
+        nextOwner = newOwner;
+        return CODE_OK;
+    }
+
+    function acceptAuthority() external onlyInit returns (uint32){
+        require(nextOwner != address(0x0), "owner is not ready to change ");
+        require(msg.sender == nextOwner, "msg sender is not the nextOwner");
+        // change owner
+        owner = nextOwner;
+        // clear temp state
+        nextOwner = address(0x0);
         return CODE_OK;
     }
 
